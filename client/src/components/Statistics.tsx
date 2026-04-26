@@ -55,7 +55,7 @@ function AnimatedCounter({ end, label, suffix = '', prefix = '' }: CounterProps)
 
 export default function Statistics() {
   return (
-    <section className="relative py-20 bg-gradient-to-b from-slate-900 to-slate-950 overflow-hidden">
+    <section id="stats" className="relative py-20 bg-gradient-to-b from-slate-900 to-slate-950 overflow-hidden">
       {/* Background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
@@ -74,6 +74,10 @@ export default function Statistics() {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
+          <div className="ox-badge mb-5">
+            <span className="ox-badge-dot" />
+            The Numbers
+          </div>
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             <span className="text-white">Why Security Matters</span>
             <br />

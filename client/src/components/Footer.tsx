@@ -54,10 +54,15 @@ export default function Footer() {
             >
               <h4 className="text-white font-bold mb-4">Product</h4>
               <ul className="space-y-2">
-                {['Features', 'How It Works', 'Pricing', 'Security'].map((item) => (
-                  <li key={item}>
-                    <a href="#" className="text-gray-400 hover:text-cyan-400 transition-colors text-sm">
-                      {item}
+                {[
+                  { label: 'Features', href: '#features' },
+                  { label: 'How It Works', href: '#how-it-works' },
+                  { label: 'Dashboard', href: '#dashboard' },
+                  { label: 'Statistics', href: '#stats' },
+                ].map((item) => (
+                  <li key={item.label}>
+                    <a href={item.href} className="text-gray-400 hover:text-cyan-400 transition-colors text-sm">
+                      {item.label}
                     </a>
                   </li>
                 ))}
@@ -73,10 +78,15 @@ export default function Footer() {
             >
               <h4 className="text-white font-bold mb-4">Company</h4>
               <ul className="space-y-2">
-                {['About Us', 'Blog', 'Careers', 'Contact'].map((item) => (
-                  <li key={item}>
-                    <a href="#" className="text-gray-400 hover:text-cyan-400 transition-colors text-sm">
-                      {item}
+                {[
+                  { label: 'About', href: '#problem' },
+                  { label: 'Why ObserveX', href: '#why' },
+                  { label: 'Reviews', href: '#testimonials' },
+                  { label: 'Book Demo', href: '#demo' },
+                ].map((item) => (
+                  <li key={item.label}>
+                    <a href={item.href} className="text-gray-400 hover:text-cyan-400 transition-colors text-sm">
+                      {item.label}
                     </a>
                   </li>
                 ))}

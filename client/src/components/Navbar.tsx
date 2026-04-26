@@ -35,25 +35,28 @@ export default function Navbar() {
     <motion.nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? 'backdrop-blur-md bg-black/40 border-b border-white/10'
-          : 'bg-transparent'
+          ? 'backdrop-blur-xl bg-[rgba(5,8,16,0.9)] border-b border-white/10 py-3'
+          : 'py-5'
       }`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <div className="container mx-auto px-4 flex items-center justify-between">
         {/* Logo */}
-        <motion.div
-          className="flex items-center gap-2"
+        <motion.a
+          href="#home"
+          className="flex items-center gap-3"
           whileHover={{ scale: 1.05 }}
           transition={{ type: 'spring', stiffness: 400, damping: 10 }}
         >
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center">
-            <span className="text-white font-bold text-lg">OX</span>
+          <div className="w-10 h-10 rounded-[0.62rem] bg-gradient-to-br from-cyan-400 to-violet-500 flex items-center justify-center text-[#050810] font-bold text-sm tracking-[0.08em]">
+            OX
           </div>
-          <span className="text-white font-bold text-xl hidden sm:inline">ObserveX</span>
-        </motion.div>
+          <span className="text-white text-[1.72rem] hidden sm:inline tracking-[0.06em] leading-none">
+            Observe<span className="text-cyan-400">X</span>
+          </span>
+        </motion.a>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-8">
@@ -61,7 +64,7 @@ export default function Navbar() {
             <motion.a
               key={item.label}
               href={item.href}
-              className="text-gray-300 hover:text-white transition-colors text-sm font-medium"
+              className="ox-nav-link"
               whileHover={{ color: '#ffffff' }}
             >
               {item.label}
@@ -72,19 +75,20 @@ export default function Navbar() {
         {/* CTA Buttons */}
         <div className="hidden md:flex items-center gap-4">
           <Button
+            asChild
             variant="outline"
-            className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10"
+            className="ox-btn-ghost h-10 px-5"
           >
-            Watch Demo
+            <a href="#dashboard">Watch Demo</a>
           </Button>
-          <Button className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white border-0">
-            Book Demo
+          <Button asChild className="ox-btn-primary h-10 px-5">
+            <a href="#demo">Book Demo</a>
           </Button>
         </div>
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden text-white"
+          className="md:hidden text-white border border-white/20 rounded-md p-1.5"
           onClick={() => setIsOpen(!isOpen)}
         >
           {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -94,29 +98,33 @@ export default function Navbar() {
       {/* Mobile Menu */}
       {isOpen && (
         <motion.div
-          className="md:hidden backdrop-blur-md bg-black/60 border-t border-white/10"
+          className="md:hidden backdrop-blur-xl bg-[rgba(5,8,16,0.96)] border-t border-white/10"
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="container mx-auto px-4 py-4 flex flex-col gap-4">
+          <div className="container mx-auto px-4 py-6 flex flex-col gap-4">
             {navItems.map((item) => (
               <a
                 key={item.label}
                 href={item.href}
-                className="text-gray-300 hover:text-white transition-colors py-2"
+                className="ox-nav-link py-2"
                 onClick={() => setIsOpen(false)}
               >
                 {item.label}
               </a>
             ))}
             <div className="flex flex-col gap-2 pt-2">
-              <Button variant="outline" className="w-full">
-                Watch Demo
+              <Button asChild variant="outline" className="w-full ox-btn-ghost">
+                <a href="#dashboard" onClick={() => setIsOpen(false)}>
+                  Watch Demo
+                </a>
               </Button>
-              <Button className="w-full bg-gradient-to-r from-cyan-500 to-blue-500">
-                Book Demo
+              <Button asChild className="w-full ox-btn-primary">
+                <a href="#demo" onClick={() => setIsOpen(false)}>
+                  Book Demo
+                </a>
               </Button>
             </div>
           </div>

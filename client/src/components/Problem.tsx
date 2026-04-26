@@ -38,7 +38,7 @@ export default function Problem() {
   ];
 
   return (
-    <section className="relative py-20 bg-gradient-to-b from-slate-950 to-slate-900 overflow-hidden">
+    <section id="problem" className="relative py-20 bg-gradient-to-b from-slate-950 to-slate-900 overflow-hidden">
       {/* Background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
@@ -57,6 +57,10 @@ export default function Problem() {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
+          <div className="ox-badge mb-5">
+            <span className="ox-badge-dot" />
+            The Problem
+          </div>
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             <span className="text-white">The Problem with</span>
             <br />

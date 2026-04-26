@@ -43,6 +43,26 @@
 }
 
 :root {
+  /* Core ObserveX palette from the original static aesthetic */
+  --bg: #050810;
+  --bg2: #080d1a;
+  --bg3: rgba(255, 255, 255, 0.03);
+  --border-soft: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --c: #00e5ff;
+  --cdim: rgba(0, 229, 255, 0.12);
+  --p: #8b5cf6;
+  --r: #ff3d57;
+  --g: #00ff9d;
+  --w: #ffffff;
+  --g1: #e2e8f0;
+  --g2: #94a3b8;
+  --g3: #475569;
+  --fd: "Bebas Neue", sans-serif;
+  --fh: "Rajdhani", sans-serif;
+  --fb: "DM Sans", sans-serif;
+  --fm: "Space Mono", monospace;
+
   /* Dark theme - glassmorphic AI intelligence */
   --primary: oklch(0.65 0.18 200);
   --primary-foreground: oklch(1 0 0);
@@ -128,19 +148,56 @@
   * {
     @apply border-border outline-ring/50;
   }
+
+  html {
+    scroll-behavior: smooth;
+  }
   
   body {
-    @apply bg-background text-foreground font-sans;
-    font-family: 'Sora', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--w);
+    font-family: var(--fb);
+    line-height: 1.6;
+    overflow-x: hidden;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Sora', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    @apply font-bold;
+    font-family: var(--fd);
+    letter-spacing: 0.03em;
+    line-height: 0.98;
+    font-weight: 400;
+  }
+
+  p, li, label, input, textarea, select {
+    font-family: var(--fb);
   }
   
   code, pre {
-    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-family: var(--fm);
+  }
+
+  [data-slot="button"] {
+    font-family: var(--fh);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--bg);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--g3);
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--c);
   }
   
   button:not(:disabled),
@@ -195,7 +252,7 @@
   }
 
   .glass-card-hover {
-    @apply glass-card transition-all duration-300 hover:bg-white/15 hover:border-white/30;
+    @apply backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl transition-all duration-300 hover:bg-white/15 hover:border-white/30;
     box-shadow: inset 0 0 20px rgba(6, 182, 212, 0.15), 0 0 30px rgba(6, 182, 212, 0.2);
   }
 
@@ -206,7 +263,7 @@
   }
 
   .glow-border-hover {
-    @apply glow-border transition-all duration-300 hover:border-cyan-400 hover:shadow-lg;
+    @apply border border-cyan-500/50 rounded-xl transition-all duration-300 hover:border-cyan-400 hover:shadow-lg;
     box-shadow: 0 0 30px rgba(6, 182, 212, 0.5), inset 0 0 20px rgba(6, 182, 212, 0.2);
   }
 
@@ -256,5 +313,135 @@
     50% { 
       box-shadow: 0 0 40px rgba(6, 182, 212, 0.6);
     }
+  }
+
+  .ox-shell {
+    position: relative;
+    isolation: isolate;
+    background:
+      radial-gradient(ellipse 36% 28% at 78% 14%, rgba(0, 229, 255, 0.12), transparent 70%),
+      radial-gradient(ellipse 30% 24% at 18% 22%, rgba(139, 92, 246, 0.14), transparent 74%),
+      linear-gradient(180deg, var(--bg) 0%, var(--bg2) 54%, var(--bg) 100%);
+  }
+
+  .ox-shell::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.028;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  }
+
+  .ox-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 229, 255, 0.35);
+    background: var(--cdim);
+    color: var(--c);
+    padding: 0.35rem 0.9rem;
+    font-family: var(--fm);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .ox-badge-dot {
+    width: 0.36rem;
+    height: 0.36rem;
+    border-radius: 999px;
+    background: var(--c);
+    animation: ox-dot-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes ox-dot-pulse {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.45;
+      transform: scale(0.68);
+    }
+  }
+
+  .ox-hero-title {
+    font-family: var(--fd);
+    font-size: clamp(3.4rem, 8vw, 6.6rem);
+    line-height: 0.9;
+    letter-spacing: 0.03em;
+  }
+
+  .ox-hero-title .line2 {
+    background: linear-gradient(110deg, var(--c) 0%, var(--p) 50%, var(--r) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .ox-sub {
+    color: var(--g2);
+    max-width: 34rem;
+    font-size: 0.96rem;
+    line-height: 1.8;
+  }
+
+  .ox-card {
+    border-radius: 1rem;
+    border: 1px solid var(--border-soft);
+    background: var(--bg3);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .ox-hud-card {
+    border-radius: 0.8rem;
+    border: 1px solid var(--border-strong);
+    background: rgba(5, 8, 16, 0.84);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .ox-btn-primary {
+    background: linear-gradient(135deg, var(--c) 0%, #0099bb 100%) !important;
+    color: #050810 !important;
+    border: none !important;
+    box-shadow: 0 0 0 rgba(0, 229, 255, 0);
+    transition: transform 0.24s ease, box-shadow 0.24s ease;
+  }
+
+  .ox-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 34px rgba(0, 229, 255, 0.26);
+  }
+
+  .ox-btn-ghost {
+    background: transparent !important;
+    color: var(--g1) !important;
+    border: 1px solid var(--border-strong) !important;
+  }
+
+  .ox-btn-ghost:hover {
+    color: var(--c) !important;
+    border-color: var(--c) !important;
+    background: var(--cdim) !important;
+  }
+
+  .ox-nav-link {
+    color: var(--g2);
+    font-family: var(--fh);
+    font-size: 0.94rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: color 0.25s ease;
+  }
+
+  .ox-nav-link:hover {
+    color: var(--w);
   }
 }

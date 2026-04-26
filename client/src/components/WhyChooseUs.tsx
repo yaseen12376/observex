@@ -57,7 +57,7 @@ export default function WhyChooseUs() {
   };
 
   return (
-    <section className="relative py-20 bg-gradient-to-b from-slate-900 to-slate-950 overflow-hidden">
+    <section id="why" className="relative py-20 bg-gradient-to-b from-slate-900 to-slate-950 overflow-hidden">
       {/* Background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
@@ -76,6 +76,10 @@ export default function WhyChooseUs() {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
+          <div className="ox-badge mb-5">
+            <span className="ox-badge-dot" />
+            Comparison
+          </div>
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             <span className="text-white">Why Choose</span>
             <br />

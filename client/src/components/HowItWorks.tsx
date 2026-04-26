@@ -77,6 +77,10 @@ export default function HowItWorks() {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
+          <div className="ox-badge mb-5">
+            <span className="ox-badge-dot" />
+            Process
+          </div>
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             <span className="text-white">How It Works</span>
             <br />

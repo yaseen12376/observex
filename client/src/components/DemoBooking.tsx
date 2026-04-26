@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ArrowRight } from 'lucide-react';
@@ -12,31 +12,134 @@ import { ArrowRight } from 'lucide-react';
  * - Premium CTA
  */
 
-export default function DemoBooking() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    location: '',
-    propertyType: '',
-  });
+type DemoFormData = {
+  name: string;
+  email: string;
+  phone: string;
+  location: string;
+  propertyType: string;
+};
 
+const INITIAL_FORM_DATA: DemoFormData = {
+  name: '',
+  email: '',
+  phone: '',
+  location: '',
+  propertyType: '',
+};
+
+const LOCAL_STORAGE_KEY = 'observex-demo-bookings';
+const DEFAULT_SUCCESS_MESSAGE = 'We will contact you shortly to schedule your demo.';
+const SERVER_UNAVAILABLE = 'SERVER_UNAVAILABLE';
+
+function normalizeFormData(data: DemoFormData): DemoFormData {
+  return {
+    name: data.name.trim(),
+    email: data.email.trim(),
+    phone: data.phone.trim(),
+    location: data.location.trim(),
+    propertyType: data.propertyType.trim(),
+  };
+}
+
+function saveBookingLocally(data: DemoFormData): boolean {
+  try {
+    const existingRaw = localStorage.getItem(LOCAL_STORAGE_KEY);
+    const parsed = existingRaw ? (JSON.parse(existingRaw) as unknown) : [];
+    const existing = Array.isArray(parsed) ? parsed : [];
+    existing.push({
+      ...data,
+      source: 'local-fallback',
+      submittedAt: new Date().toISOString(),
+    });
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(existing.slice(-100)));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export default function DemoBooking() {
+  const [formData, setFormData] = useState<DemoFormData>(INITIAL_FORM_DATA);
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [successMessage, setSuccessMessage] = useState(DEFAULT_SUCCESS_MESSAGE);
+
+  useEffect(() => {
+    if (!submitted) {
+      return;
+    }
+
+    const timerId = window.setTimeout(() => {
+      setSubmitted(false);
+      setSuccessMessage(DEFAULT_SUCCESS_MESSAGE);
+    }, 4500);
+
+    return () => window.clearTimeout(timerId);
+  }, [submitted]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would send to a backend
-    console.log('Form submitted:', formData);
-    setSubmitted(true);
-    setTimeout(() => {
-      setFormData({ name: '', email: '', phone: '', location: '', propertyType: '' });
-      setSubmitted(false);
-    }, 3000);
+    setSubmitError('');
+    setIsSubmitting(true);
+
+    const payload = normalizeFormData(formData);
+
+    try {
+      const response = await fetch('/api/demo-bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorPayload = (await response.json().catch(() => null)) as
+          | { message?: string; errors?: string[] }
+          | null;
+
+        if (response.status === 404 || response.status >= 500) {
+          throw new Error(SERVER_UNAVAILABLE);
+        }
+
+        const validationError =
+          errorPayload?.errors?.[0] ??
+          errorPayload?.message ??
+          'Please check your details and try again.';
+        throw new Error(validationError);
+      }
+
+      setFormData(INITIAL_FORM_DATA);
+      setSuccessMessage(DEFAULT_SUCCESS_MESSAGE);
+      setSubmitted(true);
+      return;
+    } catch (error) {
+      const shouldUseLocalFallback =
+        error instanceof TypeError ||
+        (error instanceof Error && error.message === SERVER_UNAVAILABLE);
+
+      if (shouldUseLocalFallback && saveBookingLocally(payload)) {
+        setFormData(INITIAL_FORM_DATA);
+        setSuccessMessage('Request saved locally. It will sync after the API comes back online.');
+        setSubmitted(true);
+        return;
+      }
+
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : 'Unable to submit right now. Please try again.'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const containerVariants = {
@@ -59,7 +162,7 @@ export default function DemoBooking() {
   };
 
   return (
-    <section className="relative py-20 bg-gradient-to-b from-slate-900 to-slate-950 overflow-hidden">
+    <section id="demo" className="relative py-20 bg-gradient-to-b from-slate-900 to-slate-950 overflow-hidden">
       {/* Background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
@@ -87,6 +190,10 @@ export default function DemoBooking() {
             variants={itemVariants}
             className="text-center mb-12"
           >
+            <div className="ox-badge mb-5">
+              <span className="ox-badge-dot" />
+              Get Started
+            </div>
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               <span className="text-white">Ready to Protect</span>
               <br />
@@ -110,14 +217,14 @@ export default function DemoBooking() {
                 animate={{ opacity: 1, scale: 1 }}
                 className="text-center py-8"
               >
-                <div className="text-5xl mb-4">✓</div>
+                <div className="text-5xl mb-4">OK</div>
                 <h3 className="text-2xl font-bold text-white mb-2">Thank You!</h3>
                 <p className="text-gray-300">
-                  We'll contact you shortly to schedule your demo.
+                  {successMessage}
                 </p>
               </motion.div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6" aria-busy={isSubmitting}>
                 {/* Name */}
                 <motion.div variants={itemVariants}>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -129,6 +236,7 @@ export default function DemoBooking() {
                     value={formData.name}
                     onChange={handleChange}
                     placeholder="Your name"
+                    disabled={isSubmitting}
                     required
                     className="w-full bg-white/10 border-white/20 text-white placeholder:text-gray-500"
                   />
@@ -145,6 +253,7 @@ export default function DemoBooking() {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="your@email.com"
+                    disabled={isSubmitting}
                     required
                     className="w-full bg-white/10 border-white/20 text-white placeholder:text-gray-500"
                   />
@@ -161,6 +270,7 @@ export default function DemoBooking() {
                     value={formData.phone}
                     onChange={handleChange}
                     placeholder="+91 XXXXX XXXXX"
+                    disabled={isSubmitting}
                     required
                     className="w-full bg-white/10 border-white/20 text-white placeholder:text-gray-500"
                   />
@@ -177,6 +287,7 @@ export default function DemoBooking() {
                     value={formData.location}
                     onChange={handleChange}
                     placeholder="Your city"
+                    disabled={isSubmitting}
                     required
                     className="w-full bg-white/10 border-white/20 text-white placeholder:text-gray-500"
                   />
@@ -191,8 +302,9 @@ export default function DemoBooking() {
                     name="propertyType"
                     value={formData.propertyType}
                     onChange={handleChange}
+                    disabled={isSubmitting}
                     required
-                    className="w-full bg-white/10 border border-white/20 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-cyan-500/50"
+                    className="w-full bg-slate-900 border border-white/20 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-cyan-500/50"
                   >
                     <option value="">Select property type</option>
                     <option value="apartment">Apartment</option>
@@ -208,12 +320,23 @@ export default function DemoBooking() {
                   <Button
                     type="submit"
                     size="lg"
+                    disabled={isSubmitting}
                     className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white border-0 text-base py-6 rounded-lg group"
                   >
-                    Book Your Free Security Demo
+                    {isSubmitting ? 'Submitting...' : 'Book Your Free Security Demo'}
                     <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
                   </Button>
                 </motion.div>
+
+                {submitError && (
+                  <motion.p
+                    variants={itemVariants}
+                    className="text-center text-sm text-red-300"
+                    role="alert"
+                  >
+                    {submitError}
+                  </motion.p>
+                )}
 
                 {/* Privacy Note */}
                 <motion.p

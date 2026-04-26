@@ -23,7 +23,7 @@ import ScrollToTop from '@/components/ScrollToTop';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-slate-950 text-white overflow-x-hidden">
+    <div className="ox-shell min-h-screen text-white overflow-x-hidden">
       <LoadingScreen />
       <Navbar />
       <Hero />

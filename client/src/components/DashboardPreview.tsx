@@ -49,6 +49,10 @@ export default function DashboardPreview() {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
+          <div className="ox-badge mb-5">
+            <span className="ox-badge-dot" />
+            Live Preview
+          </div>
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             <span className="text-white">Live Dashboard</span>
             <br />
